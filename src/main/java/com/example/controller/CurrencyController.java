@@ -1,11 +1,12 @@
 package com.example.controller;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.beanutils.BeanUtilsBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,73 +22,107 @@ import com.example.model.Currency;
 import com.example.service.CurrencyService;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Api(tags = "幣別轉換")
 @RestController
 public class CurrencyController {
 	
-	    @Autowired
-	    private CurrencyService currencyService;
-	
-	    @GetMapping
-	    public List<Currency> getAllCurrencys() {
-	        return currencyService.getAll();
-	    }
-	    
-	    @ApiOperation(value = "",notes = "")
-	    @PostMapping("/currenyCreate")
-	    public CurrencyForm currenyCreate(@RequestBody CurrencyForm currencyForm){
-	    	
-	        return currencyForm;
-	    }
+	 private static final Logger logger = LoggerFactory.getLogger(CurrencyController.class);
 
-	    @GetMapping("/{id}")
-	    public ResponseEntity<Currency> getCurrencyById(@PathVariable Long id) {
-	        Optional<Currency> currency = currencyService.getById(id);
-	        if (currency.isPresent()) {
-	            return ResponseEntity.ok(currency.get());
-	        } else {
-	            return ResponseEntity.notFound().build();
-	        }
-	    }
+	@Autowired
+	private CurrencyService currencyService;
 
-//	    @PutMapping
-//	    public Currency createCurrency(@RequestBody CurrencyForm currencyForm) {
-//	    	Currency currency = new Currency();
-//	    	try {
-//				BeanUtils.copyProperties(currency, currencyForm);
-//				Currency savedCurrency = currencyService.save(currency);
-//				return  savedCurrency;
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//	        
-//	        return  currency;
-//	    }
+	@GetMapping("/getCurrency")
+	public List<Currency> getAllCurrencys() {
+		
+		logger.debug("getAllCurrencys");
+		List<Currency> list =currencyService.getAll();
 
-//	    @PutMapping("/{id}")
-//	    public ResponseEntity<Currency> updateCurrency(@PathVariable Long id, @RequestBody CurrencyForm currency) {
-//	        Optional<Currency> existingCurrency = currencyService.getById(id);
-//	        if (existingCurrency.isPresent()) {
-//	        	currency.setId(id);
-//	            Currency savedCurrency = currencyService.save(currency);
-//	            return ResponseEntity.ok(savedCurrency);
-//	        } else {
-//	            return ResponseEntity.notFound().build();
-//	        }
-//	    }
+		return list ;
+	}
 
-//	    @DeleteMapping("/{id}")]= 8 
-//	    public ResponseEntity<Void> deleteCurrency(@PathVariable Long id) {
-//	        Optional<Currency> currency = currencyService.getById(id);
-//	        if (currency.isPresent()) {
-//	        	currencyService.delete(currency.get());
-//	            return ResponseEntity.noContent().build();
-//	        } else {
-//	            return ResponseEntity.notFound().build();
-//	        }
-//	    }
+	@ApiOperation(value = "新增", notes = "建立新幣資料")
+	@PostMapping("/currenyCreate")
+	public ResponseEntity<Currency> currenyCreate(@RequestBody CurrencyForm currencyForm) {
+		
+		logger.debug("currenyCreate");
+
+		Currency currency = new Currency();
+		try {
+			BeanUtilsBean.getInstance().getConvertUtils().register(false, false, 0);
+			BeanUtils.copyProperties(currency, currencyForm);
+			Currency savedCurrency = currencyService.save(currency);
+
+			if (savedCurrency != null) {
+				return ResponseEntity.ok(currency);
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.noContent().build();
+
+	}
+
+	@GetMapping("/getCurrency/{id}")
+	@ApiOperation(value = "", notes = "")
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", // 参数名字
+			value = "用户名", // 参数的描述
+			required = true, // 是否必须传入
+			paramType = "path") })
+	public ResponseEntity<Currency> getCurrencyById(@PathVariable Long id) {
+		
+		logger.debug("getCurrencyById");	
+		Optional<Currency> currency = currencyService.getById(id);
+		if (currency.isPresent()) {
+			return ResponseEntity.ok(currency.get());
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
+
+	@ApiOperation(value = "", notes = "")
+	@PutMapping("/updateCurrency")
+	public ResponseEntity<Currency> updateCurrency(@RequestBody CurrencyForm currencyForm) {
+		
+		logger.debug("updateCurrency");
+		Currency currency = new Currency();
+		try {
+			BeanUtilsBean.getInstance().getConvertUtils().register(false, false, 0);
+			BeanUtils.copyProperties(currency, currencyForm);
+			Optional<Currency> savedCurrency = currencyService.updateByCode(currency);
+
+			if (savedCurrency.isPresent()) {
+				return ResponseEntity.ok(savedCurrency.get());
+			} else {
+				return ResponseEntity.notFound().build();
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return ResponseEntity.noContent().build();
+
+	}
+
+	@ApiOperation(value = "", notes = "")
+	@DeleteMapping("/deleteCurrency/{code}")
+	public ResponseEntity<Integer> deleteCurrency(@PathVariable String code) {
+		
+		logger.debug("deleteCurrency");
+		int count = currencyService.delete(code);
+		if (count > 0) {
+			return ResponseEntity.ok(count);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+
+	}
 
 	public CurrencyService getCurrencyService() {
 		return currencyService;

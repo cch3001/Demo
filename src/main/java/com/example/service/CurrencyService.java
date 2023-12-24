@@ -16,7 +16,6 @@ public class CurrencyService {
     private CurrencyDao currencyDao;
     
     
-
     public List<Currency> getAll() {
         return currencyDao.getAll();
     }
@@ -26,7 +25,10 @@ public class CurrencyService {
         return currencyDao.getById(id);
     }
 
-
+    public Optional<Currency>  updateByCode(Currency currency) {
+        return currencyDao.updateByCode(currency);
+    }
+    
     public Currency save(Currency currency) {
     	return currencyDao.save(currency);
     }
@@ -39,9 +41,11 @@ public class CurrencyService {
     public void delete(Currency currency) {
     	currencyDao.delete(currency);
     }
-    
-    
 
+    public int  delete(String code) {
+    	return currencyDao.deleteByCode(code);
+    }
+    
 	public CurrencyDao getCurrencyDao() {
 		return currencyDao;
 	}

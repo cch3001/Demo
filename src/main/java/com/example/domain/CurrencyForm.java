@@ -2,6 +2,11 @@ package com.example.domain;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.StringEscapeUtils;
+
+import com.google.gson.annotations.SerializedName;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -21,6 +26,7 @@ public class CurrencyForm {
 	@ApiModelProperty(value = "敘述",required = true,example = "United States Dollar")
     private String description;
 
+	@SerializedName("rate_float") 
 	@ApiModelProperty(value = "匯率",required = true,example = "43693.463")
     private BigDecimal rateFloat;
 
@@ -35,11 +41,11 @@ public class CurrencyForm {
 		this.code = code;
 	}
 
-	public String getSymbol() {
-		return symbol;
+	public String getSymbol() {	
+		return symbol;	
 	}
 
-	public void setSymbol(String symbol) {
+	public void setSymbol(String symbol) {		
 		this.symbol = symbol;
 	}
 

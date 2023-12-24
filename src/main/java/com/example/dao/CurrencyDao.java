@@ -11,12 +11,20 @@ public interface CurrencyDao {
 
     public Optional<Currency> getById(Long id);
     
+    public Optional<Currency> findByCode(String code);
+    
     public Currency save(Currency currency);
+    
+    //public Integer updateByCode(Currency currency);
+    
+    public Optional<Currency> updateByCode(Currency currency);
+      
     
     public void create(Currency currency) ;
 
     public void delete(Currency currency) ;
     
-    public void deleteById(Long id);
+    public int deleteByCode(String code);
+    
 
 }
