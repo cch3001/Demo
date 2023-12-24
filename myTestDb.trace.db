@@ -1021,3 +1021,6 @@ Caused by: java.lang.IllegalStateException: The file is locked: nio:C:/Users/cch
 	at org.h2.mvstore.FileStore.open(FileStore.java:172)
 	at org.h2.mvstore.MVStore.<init>(MVStore.java:381)
 	... 116 more
+2023-12-24 16:16:06 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLDataException: Value too long for column "SYMBOL VARCHAR(3)": "'&#36;' (5)"; SQL statement:
+insert into currency (chinese_name, code, description, rate, rate_float, symbol, upd_date, id) values (?, ?, ?, ?, ?, ?, ?, ?) [22001-200]

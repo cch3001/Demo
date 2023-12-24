@@ -1,5 +1,6 @@
 package com.example.dao.impl;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -59,11 +60,20 @@ public class CurrencyDaoImpl implements  CurrencyDao{
         TypedQuery<Currency> query = entityManager.createQuery(
                 "SELECT t FROM Currency t WHERE t.code=:code",
                 Currency.class);
-        Currency getCurrency = 
-        query.setParameter("code", currency.getCode()).getSingleResult() ;      
+
+        List<Currency> getCurrencys = query.setParameter("code", currency.getCode()).getResultList() ; 
+        Currency getCurrency = null;
+        if(getCurrencys.isEmpty()) {
+        	getCurrency=currency;
+        }else {
+        	getCurrency = getCurrencys.get(0); 
+        }     
         Currency savedCurrency = null;
     	try {
     		copyPropertiesIgnoreNull(currency,getCurrency);
+    		//set update datetime
+    		Timestamp updDate  = new Timestamp(System.currentTimeMillis());
+    		getCurrency.setUpdDate(updDate);
 			savedCurrency = entityManager.merge(getCurrency);
  			
     	} catch (Exception e) {
@@ -71,25 +81,7 @@ public class CurrencyDaoImpl implements  CurrencyDao{
 		}
     	return  Optional.ofNullable(savedCurrency) ;
     }
-    
-    @Transactional(propagation=Propagation.REQUIRED)
-    public Integer updateByCode2(Currency currency) {
-    		  Query query = entityManager.createQuery(
-                "UPDATE Currency SET symbol=:symbol,rate=:rate,description=:description "
-                + " ,rateFloat=:rateFloat,chineseName=:chineseName"
-                + " WHERE code=:code",
-                Currency.class);
-        
-        int updateCount = query.setParameter("code",currency.getCode())
-        		.setParameter("symbol",currency.getSymbol())
-        		.setParameter("rate",currency.getRate())
-        		.setParameter("description",currency.getDescription())
-        		.setParameter("rateFloat",currency.getRateFloat())
-        		.setParameter("chineseName",currency.getChineseName())
-        		.executeUpdate();
-        
-        return updateCount;
-    }
+
     
     @Override
     @Transactional(propagation=Propagation.REQUIRED)

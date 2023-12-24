@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.Assert;
 
 import com.example.domain.CoindeskForm;
 import com.example.domain.CurrencyForm;
+import com.example.model.Currency;
 import com.example.service.CoindeskService;
+import com.example.service.CurrencyService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -32,7 +36,14 @@ class SpringBootSwaggerTest {
 	
 	@Autowired
 	private CoindeskService coindeskService;
+	
+	@Autowired
+	private CurrencyService currencyService;
 
+	/**
+	 * create new Currency
+	 * @throws Exception
+	 */
 	@Test
 	public void testInsertObject() throws Exception {
 
@@ -61,17 +72,21 @@ class SpringBootSwaggerTest {
 				.andExpect(status().isOk());
 	}
  
-	 
+	/**
+	 * query by primary key
+	 * @throws Exception
+	 */
 	 @Test
 	 public void testQueryById() throws Exception {
 	     MvcResult mvcResult = mockMvc.perform(get("/getCurrency/{id}", "68"))
 	             .andExpect(status().isOk()).andReturn();
-	     
-	    // Assert.
-	     //Assert.assertEquals("foo and bar", mvcResult.getResponse().getContentAsString());
-
+	  
 	 }
 	 
+	 /**
+	  * update or 
+	  * @throws Exception
+	  */
 	 @Test
 	 public void testUpdateObject() throws Exception {
 
@@ -94,19 +109,51 @@ class SpringBootSwaggerTest {
 
 	 }
 	 
+	 /**
+	  * 依照幣別刪除資料
+	  * @throws Exception
+	  */
 	 @Test
 	 public void testDeleteByCode() throws Exception {
 	     MvcResult mvcResult = mockMvc.perform(delete("/deleteCurrency/{code}", "USD"))
 	             .andExpect(status().isOk()).andReturn();
-	     
-	    // Assert.
-	     //Assert.assertEquals("foo and bar", mvcResult.getResponse().getContentAsString());
-
 	 }
 	 
+	 /**
+	  * coindesk call test
+	  * @throws Exception
+	  */
 	 @Test
 	 public void testCoindeskService() throws Exception {
+		 CoindeskForm coindeskForm = 
 		 coindeskService. parseCoinDesk();
+		 
+		 Assert.notEmpty(coindeskForm.getBpi());
+	 }
+	 
+	 /**
+	  * 同步 coindesk data
+	  * @throws Exception
+	  */
+	 @Test
+	 public void testSyncCoinDesk() throws Exception {
+
+		 List<Currency> list = currencyService.syncCoinDesk();
+		 
+		 Assert.notEmpty(list);
+	 }
+	 
+	 /**
+	  * API查詢 currency 資料
+	  * @throws Exception
+	  */
+	 @Test
+	 public void testGetCurrencyInfo() throws Exception {
+	     MvcResult mvcResult = mockMvc.perform(get("/getCurrencyInfo"))
+	             .andExpect(status().isOk()).andReturn();
+	     System.out.println();
+	    
+
 	 }
 	 
 	 

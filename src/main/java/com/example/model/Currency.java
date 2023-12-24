@@ -2,6 +2,7 @@ package com.example.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -41,6 +42,9 @@ public class Currency implements Serializable {
 
     @Column(name="chinese_name", length=30) 
     private String chineseName;
+    
+    @Column(name="UPD_DATE") 
+    private Timestamp updDate;
 
 	public Long getId() {
 		return id;
@@ -100,6 +104,14 @@ public class Currency implements Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
+	}
+
+	public Timestamp getUpdDate() {
+		return updDate;
+	}
+
+	public void setUpdDate(Timestamp updDate) {
+		this.updDate = updDate;
 	}
      
     

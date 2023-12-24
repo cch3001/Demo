@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.domain.CurrencyForm;
+import com.example.domain.CurrencyInfoForm;
 import com.example.model.Currency;
 import com.example.service.CurrencyService;
 
@@ -70,11 +71,11 @@ public class CurrencyController {
 	}
 
 	@GetMapping("/getCurrency/{id}")
-	@ApiOperation(value = "", notes = "")
-	@ApiImplicitParams({ @ApiImplicitParam(name = "id", // 参数名字
-			value = "用户名", // 参数的描述
-			required = true, // 是否必须传入
-			paramType = "path") })
+	@ApiOperation(value = "查詢幣別", notes = "查詢幣別資訊")
+	@ApiImplicitParams({ @ApiImplicitParam(name = "id", 
+			value = "Primary key", 
+			required = true, 
+			paramType = "id") })
 	public ResponseEntity<Currency> getCurrencyById(@PathVariable Long id) {
 		
 		logger.debug("getCurrencyById");	
@@ -86,7 +87,7 @@ public class CurrencyController {
 		}
 	}
 
-	@ApiOperation(value = "", notes = "")
+	@ApiOperation(value = "更新幣別", notes = "更新幣別資訊")
 	@PutMapping("/updateCurrency")
 	public ResponseEntity<Currency> updateCurrency(@RequestBody CurrencyForm currencyForm) {
 		
@@ -110,7 +111,7 @@ public class CurrencyController {
 
 	}
 
-	@ApiOperation(value = "", notes = "")
+	@ApiOperation(value = "刪除", notes = "刪除幣別資訊")
 	@DeleteMapping("/deleteCurrency/{code}")
 	public ResponseEntity<Integer> deleteCurrency(@PathVariable String code) {
 		
@@ -118,6 +119,28 @@ public class CurrencyController {
 		int count = currencyService.delete(code);
 		if (count > 0) {
 			return ResponseEntity.ok(count);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+
+	}
+	
+	@ApiOperation(value = "查詢", notes = "查詢轉換幣別資訊")
+	@GetMapping("/getCurrencyInfo")
+	public ResponseEntity<List<CurrencyInfoForm>> getCurrencyInfo() {
+		
+		logger.debug("getCurrencyInfo");
+		//同步CoinDesk
+		try {
+			currencyService.syncCoinDesk() ;
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+		}
+			
+		List<CurrencyInfoForm> list = currencyService.getCurrencyInfo();
+		
+		if (list.size() > 0) {
+			return ResponseEntity.ok(list);
 		} else {
 			return ResponseEntity.notFound().build();
 		}

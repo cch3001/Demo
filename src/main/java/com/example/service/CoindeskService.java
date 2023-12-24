@@ -17,21 +17,16 @@ public class CoindeskService {
     @Value("${coindesk.url}")
     private String coindeskUrl;
     
-    public CoindeskForm parseCoinDesk() {
+    public CoindeskForm parseCoinDesk()throws IOException {
     	
-        URL url;
-		try {
-			url = new URL(coindeskUrl);        
-	        Gson gson = new Gson();
-	        InputStreamReader reader = new InputStreamReader(url.openStream());
+        URL url  = new URL(coindeskUrl);		      
+        Gson gson = new Gson();
+        InputStreamReader reader = new InputStreamReader(url.openStream());
 
-	        TypeToken<CoindeskForm> typeToken = new TypeToken<CoindeskForm>(){};
-	        CoindeskForm genericBean = gson.fromJson(reader, typeToken.getType());
-	       
-	        return genericBean ;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+        TypeToken<CoindeskForm> typeToken = new TypeToken<CoindeskForm>(){};
+        CoindeskForm genericBean = gson.fromJson(reader, typeToken.getType());
+       
+        return genericBean ;
+        
     }
 }
