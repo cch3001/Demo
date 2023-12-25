@@ -48,12 +48,19 @@ class SpringBootSwaggerTest {
 	public void testInsertObject() throws Exception {
 
 		CurrencyForm anObject = new CurrencyForm();
-		anObject.setSymbol("$");
-		anObject.setChineseName("美金");
-		anObject.setCode("USD");
-		anObject.setRate( "43,693.4630");
-		anObject.setDescription("United States Dollar" );
-		anObject.setRateFloat(new BigDecimal(43693.463f));
+//		anObject.setSymbol("$");
+//		anObject.setChineseName("美金");
+//		anObject.setCode("USD");
+//		anObject.setRate( "43,693.4630");
+//		anObject.setDescription("United States Dollar" );
+//		anObject.setRateFloat(new BigDecimal(43693.463f));
+
+		anObject.setSymbol("NT$");
+		anObject.setChineseName("台幣");
+		anObject.setCode("NTD");
+		anObject.setRate( "143,693.4630");
+		anObject.setDescription("Taiwan Dollar" );
+		anObject.setRateFloat(new BigDecimal(143693.463f));
 		
 //		anObject.setSymbol("£");
 //		anObject.setChineseName("英鎊");
@@ -71,6 +78,19 @@ class SpringBootSwaggerTest {
 		mockMvc.perform(post("/currenyCreate").contentType(MediaType.APPLICATION_JSON_UTF8).content(requestJson))
 				.andExpect(status().isOk());
 	}
+	
+	
+	
+	/**
+	 * query all
+	 * @throws Exception
+	 */
+	 @Test
+	 public void testGetCurrency() throws Exception {
+	     MvcResult mvcResult = mockMvc.perform(get("/getCurrency"))
+	             .andExpect(status().isOk()).andReturn();
+	     System.out.println(mvcResult.getResponse().getContentAsString());
+	 }
  
 	/**
 	 * query by primary key
@@ -80,7 +100,7 @@ class SpringBootSwaggerTest {
 	 public void testQueryById() throws Exception {
 	     MvcResult mvcResult = mockMvc.perform(get("/getCurrency/{id}", "68"))
 	             .andExpect(status().isOk()).andReturn();
-	  
+	     System.out.println(mvcResult.getResponse().getContentAsString());
 	 }
 	 
 	 /**
@@ -94,8 +114,8 @@ class SpringBootSwaggerTest {
 			anObject.setSymbol("$");
 			anObject.setChineseName("美金");
 			anObject.setCode("USD");
-			anObject.setRate( "43,693.4630");
-			anObject.setDescription("United States Dollar2" );
+//			anObject.setRate( "43,693.4630");
+//			anObject.setDescription("United States Dollar2" );
 			BigDecimal rateFloat = new BigDecimal(43693.463f);
 			anObject.setRateFloat(rateFloat);
 			
@@ -104,8 +124,10 @@ class SpringBootSwaggerTest {
 			ObjectWriter ow = mapper.writer().withDefaultPrettyPrinter();
 			String requestJson = ow.writeValueAsString(anObject);
 
+			MvcResult mvcResult = 
 			mockMvc.perform(put("/updateCurrency").contentType(MediaType.APPLICATION_JSON_UTF8).content(requestJson))
-					.andExpect(status().isOk());
+					.andExpect(status().isOk()).andReturn();
+			System.out.println(mvcResult.getResponse().getContentAsString());
 
 	 }
 	 
@@ -117,6 +139,7 @@ class SpringBootSwaggerTest {
 	 public void testDeleteByCode() throws Exception {
 	     MvcResult mvcResult = mockMvc.perform(delete("/deleteCurrency/{code}", "USD"))
 	             .andExpect(status().isOk()).andReturn();
+	     System.out.println(mvcResult.getResponse().getContentAsString());
 	 }
 	 
 	 /**
@@ -151,9 +174,9 @@ class SpringBootSwaggerTest {
 	 public void testGetCurrencyInfo() throws Exception {
 	     MvcResult mvcResult = mockMvc.perform(get("/getCurrencyInfo"))
 	             .andExpect(status().isOk()).andReturn();
-	     System.out.println();
-	    
 
+	     System.out.println(mvcResult.getResponse().getContentAsString());
+	  
 	 }
 	 
 	 
